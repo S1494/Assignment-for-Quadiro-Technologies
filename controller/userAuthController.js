@@ -134,8 +134,16 @@ exports.signupPost = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  req.session.destroy(() => {
-    res.status(200).json({
+  console.log("k");
+
+  req.session.destroy((error) => {
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to Logged out",
+      });
+    }
+    return res.status(200).json({
       success: true,
       message: "Logged out successfully",
     });
