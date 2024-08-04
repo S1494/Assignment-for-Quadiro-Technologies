@@ -33,12 +33,22 @@ exports.productPost = async (req, res) => {
 };
 
 exports.productDelete = async (req, res) => {
-  const id = req.params.id;
-  await carsSchema.findByIdAndDelete(id);
-  return res.status(400).json({
-    success: true,
-    message: "product deleted",
-  });
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Product id not found",
+      });
+    }
+    const status = await carsSchema.findByIdAndDelete(id);
+    console.log(status);
+
+    return res.status(200).json({
+      success: true,
+      message: "product deleted",
+    });
+  } catch (error) {}
 };
 
 exports.productPut = async (req, res) => {
@@ -47,7 +57,16 @@ exports.productPut = async (req, res) => {
 
   try {
     if (!carName || !mfgYear || !price) {
-      return res.status(400).send("All Fields Are Mandatory");
+      return res.status(400).json({
+        success: false,
+        message: "All fields are mandatory",
+      });
+    }
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Product id not found",
+      });
     }
 
     await carsSchema.findByIdAndUpdate(id, {

@@ -11,17 +11,33 @@ exports.signupGet = (req, res) => {
 exports.loginPost = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      purpose: "Assignment for Quadiro Technologies",
+      message: "Email & Password is required",
+    });
+  }
+
   try {
     const isExist = await userAuthSchema.findOne({ email });
 
     if (!isExist) {
-      return res.status(400).send("Username and password is invalid");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        message: "Username and password is invalid",
+      });
     }
 
     const encpass = await bcrypt.compare(password, isExist.password);
 
     if (!encpass) {
-      return res.status(400).send("Username and password is invalid");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        message: "Username and password is invalid",
+      });
     }
 
     req.session.isAuth = true;
@@ -41,7 +57,10 @@ exports.loginPost = async (req, res) => {
     });
     // send this user to user dashboard
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).json({
+      purpose: "Assignment for Quadiro Technologies",
+      message: error.message,
+    });
   }
 };
 
@@ -50,18 +69,35 @@ exports.signupPost = async (req, res) => {
 
   try {
     if (!name || !email || !password) {
-      return res.status(400).send("All Fields Are Mandatory");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        messagel: "All Fields Are Mandatory",
+      });
     }
 
     if (name.length < 3) {
-      return res.status(400).send("Name  is too short");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        messagel: "Name  is too short",
+      });
     }
+
     if (!email.includes("@") || !email.includes(".com") || email.length < 9) {
-      return res.status(400).send("Enter an valid email address");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        messagel: "Enter an valid email address",
+      });
     }
 
     if (password.length <= 7) {
-      return res.status(400).send("Password is too short");
+      return res.status(400).json({
+        success: false,
+        purpose: "Assignment for Quadiro Technologies",
+        messagel: "Password is too short",
+      });
     }
 
     const encPassword = await bcrypt.hash(password, 15);
@@ -80,9 +116,21 @@ exports.signupPost = async (req, res) => {
 
     nUser.save();
 
-    return res.status(200).send("user registered");
+    return res.status(200).json({
+      success: true,
+      purpose: "Assignment for Quadiro Technologies",
+      messagel: "user registered",
+    });
   } catch (error) {
     res.send(error);
-    console.log(error);
   }
+};
+
+exports.logout = async (req, res) => {
+  req.session.destroy(() => {
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  });
 };
