@@ -9,6 +9,13 @@ exports.signupGet = (req, res) => {
 };
 
 exports.loginPost = async (req, res) => {
+  if (req.session.isAuth) {
+    return res.status(200).json({
+      success: true,
+      purpose: "Assignment for Quadiro Technologies",
+      message: "User is already logged in",
+    });
+  }
   const { email, password } = req.body;
 
   if (!email || !password) {
